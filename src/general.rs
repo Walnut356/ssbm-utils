@@ -1,34 +1,5 @@
-
 #[cfg(test)]
 mod test;
-
-pub trait Coordinate {}
-
-#[derive(Debug, Clone)]
-pub struct Point {
-    x: f32,
-    y: f32,
-}
-impl Point {
-    pub fn new(x: f32, y: f32) -> Self {
-        Self { x, y }
-    }
-}
-
-pub struct Joystick {
-    x: f32,
-    y: f32,
-}
-
-pub struct Position {
-    x: f32,
-    y: f32,
-}
-
-pub struct Velocity {
-    x: f32,
-    y: f32,
-}
 
 /// Returns a sequence containing the character's height on each frame, relative to the starting location.
 ///

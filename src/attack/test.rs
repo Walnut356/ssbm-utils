@@ -1,5 +1,5 @@
 use crate::character::Character;
-use crate::{attack::*, TRIGGER_MIN, Z_TRIGGER};
+use crate::{attack::*, Z_TRIGGER};
 use approx::*;
 
 #[test]
@@ -58,4 +58,27 @@ fn test_hitstun() {
     let hs = hitstun(kb);
 
     assert_eq!(hs, 61);
+}
+
+#[test]
+fn test_sakurai_angle() {
+    let falco = Character::Falco.get_stats();
+    // Marth sourspot jab
+    let kb = knockback(
+        4.0, 4.0, 50, 20, 0, false, &falco, 9.0, false, false, false, false, false, false,
+    );
+    let trajectory = 361.0;
+
+    assert_eq!(kb, 32.033333);
+    let modified = resolve_sakurai_angle(trajectory, kb, true);
+    assert_eq!(modified, 14.666443);
+
+    let dk = Character::DK.get_stats();
+    // Marth sourspot jab, @ position 8 in the stale move queue
+    let kb = knockback(
+        3.92, 3.92, 50, 20, 0, false, &dk, 12.0, false, false, false, false, false, false,
+    );
+    assert_eq!(kb, 32.082825);
+    let modified = resolve_sakurai_angle(trajectory, kb, true);
+    assert_eq!(modified, 36.44287);
 }
