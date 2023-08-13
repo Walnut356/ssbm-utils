@@ -9,6 +9,7 @@ Currently supports:
 * staled <-> unstaled damage
 * shield damage
 * shieldstun
+* shield pushback for attacker and defender
 * jump arc
 * knockback/knockback travel (and associated helper functions such as modifying trajectory by DI)
 
