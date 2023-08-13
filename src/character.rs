@@ -57,9 +57,10 @@ pub enum Character {
 }
 
 impl Character {
-    // these are all objects rather than a lookup table because it allows for customizing the characters and having
-    // several unique instances of the same character with different stats. That can be useful for creating balance
-    // mods, swapping to PAL values, or demonstrating a specific threshold
+    // these are all objects rather than a lookup table because it allows for customizing the
+    // characters and having several unique instances of the same character with different stats.
+    // That can be useful for creating balance mods, swapping to PAL values, or demonstrating a
+    // specific threshold
     pub fn get_stats(&self) -> Attributes {
         match *self {
             Character::Fox => Attributes {

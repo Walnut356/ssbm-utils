@@ -84,26 +84,6 @@ pub fn knockback(
     kb
 }
 
-/// Used when recieving downwards knockback while grounded
-pub enum GroundHitType {
-    /// For knockback values higher than 80, causes character to bounce off the ground in tumble
-    Fly,
-    /// For knockback values 80 or lower, causes character to reel, but does not bounce or knock down
-    Stay,
-}
-
-pub fn get_ground_hit_type(knockback: f32, trajectory: f32) -> Option<GroundHitType> {
-    if trajectory > 180.0 && trajectory != 361.0 {
-        if knockback > 80.0 {
-            Some(GroundHitType::Fly)
-        } else {
-            Some(GroundHitType::Stay)
-        }
-    } else {
-        None
-    }
-}
-
 pub fn shield_stun(damage: f32, analog: f32, is_yoshi: bool) -> u32 {
     if is_yoshi {
         return 0;
@@ -147,10 +127,14 @@ pub fn hitlag(damage: f32, electric: bool, crouch_cancel: bool) -> u32 {
     )
 }
 
+/// Converts a knockback value into the number of frames the victim spends in hitstun
 pub fn hitstun(knockback: f32) -> u32 {
     (knockback * 0.4).floor() as u32
 }
 
+
+/// Velocity imparted on the defender when their shield is hit. Decays by the defender's traction
+/// per frame.
 pub fn shield_pushback_defender(
     damage: f32,
     analog: f32,
@@ -179,6 +163,7 @@ pub fn shield_pushback_defender(
     d_push
 }
 
+/// Velocity imparted on the attacker when hitting shield
 pub fn shield_pushback_attacker(damage: f32, analog: f32) -> f32 {
     let a = (analog - 0.3) * 0.1;
     (damage.floor() * a) + 0.02
@@ -222,6 +207,8 @@ pub fn resolve_sakurai_angle(trajectory: f32, knockback: f32, grounded: bool) ->
     44.0 * scalar
 }
 
+/// Modifies a knockback trajectory to account for DI based on a joystick X and Y value.
+/// This should be done after dealing with trajectory modifiers such as sakurai angle
 pub fn apply_di(trajectory: f32, joystick_x: f32, joystick_y: f32) -> f32 {
     let joystick_angle = point_to_angle(joystick_x, joystick_y);
 
@@ -249,12 +236,16 @@ pub fn get_di_efficacy(old_trajectory: f32, new_trajectory: f32) -> f32 {
     (new_trajectory - old_trajectory).abs() / 18.0
 }
 
+/// Converts a knockback value and angle into the initial X knockback velocity imparted on the
+/// character.
 pub fn initial_x_velocity(knockback: f32, angle: f32) -> f32 {
     let magnitude = knockback * 0.03;
     let angle = angle.to_radians().cos();
     angle * magnitude
 }
 
+/// Converts a knockback value and angle into the initial Y knockback velocity imparted on the
+/// character.
 pub fn initial_y_velocity(knockback: f32, angle: f32, grounded: bool) -> f32 {
     let high_kb = knockback >= 80.0;
 
@@ -275,12 +266,13 @@ pub fn initial_y_velocity(knockback: f32, angle: f32, grounded: bool) -> f32 {
     velocity
 }
 
+/// Rate at which horizontal knockback velocity decreases per frame
 pub fn get_horizontal_decay(angle: f32) -> f32 {
     0.051 * angle.to_radians().cos()
 }
 
-//Rate at which vertical velocity decreases
-//Gravity also plays a role, but that is done in knockbackTravel
+/// Rate at which vertical knockback velocity decreases per frame
+/// Gravity also plays a role, but that is done in knockback_travel
 pub fn get_vertical_decay(angle: f32) -> f32 {
     0.051 * angle.to_radians().sin()
 }
@@ -289,7 +281,8 @@ pub fn will_tumble(kb: f32) -> bool {
     kb > 80.0
 }
 
-/// Accepts a tournament legal stage's in-game id and a pair of X, Y coordinates. Returns true if the player is dead
+/// Accepts a tournament legal stage's in-game id and a pair of X, Y coordinates.
+/// Returns true if the player is outside of the stage's blast zones.
 pub fn is_past_blastzone(stage: u16, position_x: f32, position_y: f32) -> bool {
     let blast_zones = match stage {
         2 => FOUNTAIN_BLASTZONES,
