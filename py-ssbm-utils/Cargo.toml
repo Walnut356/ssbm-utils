@@ -1,0 +1,15 @@
+[package]
+name = "py-ssbm-utils"
+version = "0.1.0"
+edition = "2021"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+pyo3 = { version = "0.19.1", features = ["extension-module"] }
+lazy_static = "1.4.0"
+strum = "0.25.0"
+strum_macros = "0.25.1"
+num_enum = "0.7.0"
+nohash-hasher = "0.2.0"
+approx = "0.5.1"
